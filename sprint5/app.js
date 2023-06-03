@@ -9,7 +9,7 @@ async function fetchJoke() {
     });
 
     if (!response.ok) {
-      throw new Error('No s\'ha pogut obtenir l\'acudit');
+      throw new Error('No se ha podido obtener el chiste');
     }
 
     const data = await response.json();
@@ -21,8 +21,9 @@ async function fetchJoke() {
 
 document.addEventListener('DOMContentLoaded', () => {
   const btnEmpezar = document.getElementById('btnEmpezar');
+  const chistesContainer = document.getElementById('chistes');
   btnEmpezar.addEventListener('click', async () => {
     const joke = await fetchJoke();
-    console.log(joke);
+    chistesContainer.textContent = joke;
   });
 });
