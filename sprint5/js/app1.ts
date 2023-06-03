@@ -27,15 +27,22 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
 const apiUrl = 'https://icanhazdadjoke.com/';
+const chuckNorrisJokeApiUrl = 'https://api.chucknorris.io/jokes/random';
 
-const reportJokes: { joke: string; score: number; date: string }[] = [];
+interface Joke {
+  joke: string;
+  score: number;
+  date: string;
+}
 
-async function fetchJoke(): Promise<string> {
+const reportJokes: Joke[] = [];
+
+async function fetchDadJoke(): Promise<string> {
   try {
     const response = await fetch(apiUrl, {
       headers: {
-        'Accept': 'application/json'
-      }
+        'Accept': 'application/json',
+      },
     });
 
     if (!response.ok) {
@@ -50,34 +57,53 @@ async function fetchJoke(): Promise<string> {
   }
 }
 
+async function fetchChuckNorrisJoke(): Promise<string> {
+  try {
+    const response = await fetch(chuckNorrisJokeApiUrl);
+    const data = await response.json();
+    return data.value;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+async function fetchRandomJoke(): Promise<string> {
+  const randomIndex = Math.floor(Math.random() * 2);
+  if (randomIndex === 0) {
+    return fetchDadJoke();
+  } else {
+    return fetchChuckNorrisJoke();
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   const btnEmpezar = document.getElementById('btnEmpezar') as HTMLButtonElement;
   const chistesContainer = document.getElementById('chistes') as HTMLParagraphElement;
-  const btnpuntos = document.querySelectorAll('.btn-score');
+  const btnPuntos = document.querySelectorAll('.btn-score');
 
   let currentJoke = '';
 
-  btnpuntos.forEach((btn) => {
+  btnPuntos.forEach((btn) => {
     (btn as HTMLElement).style.display = 'none'; // Ocultar botones de votación inicialmente
 
     btn.addEventListener('click', () => {
       const score = parseInt(btn.textContent!);
       const currentDate = new Date().toISOString();
 
-      reportJokes.push({ joke: currentJoke, score, date: currentDate });
+      reportJokes.push({joke: currentJoke, score, date: currentDate});
 
       console.log(reportJokes);
     });
   });
 
   btnEmpezar.addEventListener('click', async () => {
-    const joke = await fetchJoke();
+    const joke = await fetchRandomJoke();
     chistesContainer.textContent = joke;
     currentJoke = joke;
 
-    btnpuntos.forEach((btn) => {
+    btnPuntos.forEach((btn) => {
       (btn as HTMLElement).style.display = 'inline-block'; // Mostrar botones de votación al cargar los chistes
     });
   });
 });
-

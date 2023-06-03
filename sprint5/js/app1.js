@@ -32,14 +32,15 @@ document.addEventListener('DOMContentLoaded', () => __awaiter(void 0, void 0, vo
     }
 }));
 const apiUrl = 'https://icanhazdadjoke.com/';
+const chuckNorrisJokeApiUrl = 'https://api.chucknorris.io/jokes/random';
 const reportJokes = [];
-function fetchJoke() {
+function fetchDadJoke() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const response = yield fetch(apiUrl, {
                 headers: {
-                    'Accept': 'application/json'
-                }
+                    'Accept': 'application/json',
+                },
             });
             if (!response.ok) {
                 throw new Error('No se ha podido obtener el chiste');
@@ -53,12 +54,36 @@ function fetchJoke() {
         }
     });
 }
+function fetchChuckNorrisJoke() {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const response = yield fetch(chuckNorrisJokeApiUrl);
+            const data = yield response.json();
+            return data.value;
+        }
+        catch (error) {
+            console.log(error);
+            throw error;
+        }
+    });
+}
+function fetchRandomJoke() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const randomIndex = Math.floor(Math.random() * 2);
+        if (randomIndex === 0) {
+            return fetchDadJoke();
+        }
+        else {
+            return fetchChuckNorrisJoke();
+        }
+    });
+}
 document.addEventListener('DOMContentLoaded', () => {
     const btnEmpezar = document.getElementById('btnEmpezar');
     const chistesContainer = document.getElementById('chistes');
-    const btnpuntos = document.querySelectorAll('.btn-score');
+    const btnPuntos = document.querySelectorAll('.btn-score');
     let currentJoke = '';
-    btnpuntos.forEach((btn) => {
+    btnPuntos.forEach((btn) => {
         btn.style.display = 'none'; // Ocultar botones de votación inicialmente
         btn.addEventListener('click', () => {
             const score = parseInt(btn.textContent);
@@ -68,10 +93,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
     btnEmpezar.addEventListener('click', () => __awaiter(void 0, void 0, void 0, function* () {
-        const joke = yield fetchJoke();
+        const joke = yield fetchRandomJoke();
         chistesContainer.textContent = joke;
         currentJoke = joke;
-        btnpuntos.forEach((btn) => {
+        btnPuntos.forEach((btn) => {
             btn.style.display = 'inline-block'; // Mostrar botones de votación al cargar los chistes
         });
     }));
