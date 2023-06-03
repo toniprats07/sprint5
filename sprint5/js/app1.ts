@@ -1,6 +1,8 @@
 /// <reference lib="dom" />
 
-const apiUrl: string = 'https://icanhazdadjoke.com/';
+const apiUrl = 'https://icanhazdadjoke.com/';
+
+const reportJokes: { joke: string; score: number; date: string }[] = [];
 
 async function fetchJoke(): Promise<string> {
   try {
@@ -23,16 +25,33 @@ async function fetchJoke(): Promise<string> {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  const btnEmpezar: HTMLElement | null = document.getElementById('btnEmpezar');
-  const chistesContainer: HTMLElement | null = document.getElementById('chistes');
-  if (btnEmpezar && chistesContainer) {
-    btnEmpezar.addEventListener('click', async () => {
-      try {
-        const joke: string = await fetchJoke();
-        chistesContainer.textContent = joke
-      } catch (error) {
-        console.log(error);
-      }
+  const btnEmpezar = document.getElementById('btnEmpezar') as HTMLButtonElement;
+  const chistesContainer = document.getElementById('chistes') as HTMLParagraphElement;
+  const btnpuntos = document.querySelectorAll('.btn-score');
+
+  let currentJoke = '';
+
+  btnpuntos.forEach((btn) => {
+    (btn as HTMLElement).style.display = 'none'; // Ocultar botones de votación inicialmente
+
+    btn.addEventListener('click', () => {
+      const score = parseInt(btn.textContent!);
+      const currentDate = new Date().toISOString();
+
+      reportJokes.push({ joke: currentJoke, score, date: currentDate });
+
+      console.log(reportJokes);
     });
-  }
+  });
+
+  btnEmpezar.addEventListener('click', async () => {
+    const joke = await fetchJoke();
+    chistesContainer.textContent = joke;
+    currentJoke = joke;
+
+    btnpuntos.forEach((btn) => {
+      (btn as HTMLElement).style.display = 'inline-block'; // Mostrar botones de votación al cargar los chistes
+    });
+  });
 });
+

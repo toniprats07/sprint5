@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 const apiUrl = 'https://icanhazdadjoke.com/';
+const reportJokes = [];
 function fetchJoke() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -33,15 +34,23 @@ function fetchJoke() {
 document.addEventListener('DOMContentLoaded', () => {
     const btnEmpezar = document.getElementById('btnEmpezar');
     const chistesContainer = document.getElementById('chistes');
-    if (btnEmpezar && chistesContainer) {
-        btnEmpezar.addEventListener('click', () => __awaiter(void 0, void 0, void 0, function* () {
-            try {
-                const joke = yield fetchJoke();
-                chistesContainer.textContent = joke;
-            }
-            catch (error) {
-                console.log(error);
-            }
-        }));
-    }
+    const btnpuntos = document.querySelectorAll('.btn-score');
+    let currentJoke = '';
+    btnpuntos.forEach((btn) => {
+        btn.style.display = 'none'; // Ocultar botones de votación inicialmente
+        btn.addEventListener('click', () => {
+            const score = parseInt(btn.textContent);
+            const currentDate = new Date().toISOString();
+            reportJokes.push({ joke: currentJoke, score, date: currentDate });
+            console.log(reportJokes);
+        });
+    });
+    btnEmpezar.addEventListener('click', () => __awaiter(void 0, void 0, void 0, function* () {
+        const joke = yield fetchJoke();
+        chistesContainer.textContent = joke;
+        currentJoke = joke;
+        btnpuntos.forEach((btn) => {
+            btn.style.display = 'inline-block'; // Mostrar botones de votación al cargar los chistes
+        });
+    }));
 });
