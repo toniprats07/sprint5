@@ -9,6 +9,28 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+const weatherApiUrl = 'https://api.openweathermap.org/data/2.5/weather?q=Barcelona&appid=10f9b5b8eb548e0af3a7418fb76a0d4d&lang=es&units=metric';
+document.addEventListener('DOMContentLoaded', () => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const response = yield fetch(weatherApiUrl);
+        const data = yield response.json();
+        const weatherIconCode = data.weather[0].icon;
+        const temperature = data.main.temp;
+        const weatherInfo = document.getElementById('weather-info');
+        if (weatherInfo instanceof HTMLElement) {
+            const icon = document.createElement('img');
+            icon.src = `http://openweathermap.org/img/wn/${weatherIconCode}.png`;
+            icon.alt = 'Weather Icon';
+            weatherInfo.appendChild(icon);
+            const temperatureElement = document.createElement('span');
+            temperatureElement.textContent = `|| ${temperature}°C`;
+            weatherInfo.appendChild(temperatureElement);
+        }
+    }
+    catch (error) {
+        console.log(error);
+    }
+}));
 const apiUrl = 'https://icanhazdadjoke.com/';
 const reportJokes = [];
 function fetchJoke() {
